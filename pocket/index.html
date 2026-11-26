@@ -589,15 +589,15 @@ function updPlayer(dt){const P=R.P,I=IN,hide=isHide();P.fireT-=dt;P.rollCd-=dt;P
  // weapon switching
  if(!busy){if(I.swap){const order=[0,1,2].filter(s=>s===2||(s===0?P.eq.w1:P.eq.w2));P.slot=order[(order.indexOf(P.slot)+1)%order.length];P.rel=0;sfx.click();}if(I.w1&&P.eq.w1){P.slot=0;P.rel=0;}if(I.w2&&P.eq.w2){P.slot=1;P.rel=0;}if(I.w3){P.slot=2;P.rel=0;}}
  // reload
- if(P.rel>0){P.rel-=dt;if(P.rel<=0){const need=d.mag-w.mag;w.mag+=hide?need:need-bagTake(P.bag,d.am,need);sfx.click();}}
- else if(!d.melee&&!busy&&((I.rel&&w.mag<d.mag)||(w.mag<=0&&!P.use))&&reserve(w)>0&&P.roll<=0){P.rel=d.rel*(SAVE.up.bench>=2?.85:1);sfx.reload();}
+ if(P.rel>0){P.rel-=dt;if(P.rel<=0){const need=d.mag-w.mag;w.mag+=need-bagTake(P.bag,d.am,need);sfx.click();}}
+ else if(!d.melee&&!busy&&!hide&&((I.rel&&w.mag<d.mag)||(w.mag<=0&&!P.use))&&reserve(w)>0&&P.roll<=0){P.rel=d.rel*(SAVE.up.bench>=2?.85:1);sfx.reload();}
  // heal
  if(!busy){if(I.use)useMed(I.use);else if(I.heal)autoHeal();}
  if(P.use){P.use.t+=dt;if(P.use.t>=P.use.dur)finishUse();}
  // fire
  const firing=I.fire&&!busy&&P.roll<=0;
  if(firing&&!P.use){if(d.melee){if(P.melT<=0){P.melT=d.rate;P.swing=.18;sfx.roll();for(const e of R.en.slice())if(dist(P.x,P.y,e.x,e.y)<d.rng+ER&&Math.abs(angd(Math.atan2(e.y-P.y,e.x-P.x),P.ang))<.9){hurtEnemy(e,d.dmg,P.ang);if(!e.d.dummy){e.x+=Math.cos(P.ang)*10;e.y+=Math.sin(P.ang)*10;}}}}
-  else if(P.rel<=0&&P.fireT<=0){if(w.mag>0){if(!hide)w.mag--;P.fireT=d.rate;fireGun(P,w,P.ang,1);P.recoil=Math.min(.09,P.recoil+d.spr*.35);P.flash=.05;R.shake=Math.max(R.shake,d.snd>=2?.1:.05);sfx.shot(d.snd);alertNear(P.x,P.y,d.snd>=2?420:300);}
+  else if(P.rel<=0&&P.fireT<=0){if(w.mag>0||hide){if(!hide)w.mag--;P.fireT=d.rate;fireGun(P,w,P.ang,1);P.recoil=Math.min(.09,P.recoil+d.spr*.35);P.flash=.05;R.shake=Math.max(R.shake,d.snd>=2?.1:.05);sfx.shot(d.snd);alertNear(P.x,P.y,d.snd>=2?420:300);}
    else if(!P.wasFire){sfx.empty();if(reserve(w)<=0)msg(IT[d.am].n+'이 없어요. 무기 교체나 프라이팬!','#ff8a80');}}}
  P.wasFire=firing;
  // interact
